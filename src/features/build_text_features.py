@@ -1,17 +1,13 @@
 from gensim.models import KeyedVectors
 from nltk.corpus import stopwords
 from nltk.tokenize import TweetTokenizer
-from scipy import sparse
-from scipy.sparse import data
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 import nltk
 import numpy as np
-import os
 import pandas as pd
 import pickle
 import re
 import tensorflow as tf
-from tensorflow.keras.preprocessing import sequence
 
 # Load in stop words
 nltk.download("stopwords")
@@ -123,9 +119,9 @@ def generate_embedding_matrix(word2vec_model, word_index):
 
 if __name__ == "__main__":
 
-    TASK = "humanitarian"       # "humanitarian" or "informative"
+    TASK = "informative"       # "humanitarian" or "informative"
     SEED = 2021                    # Seed to be used for reproducability
-    GEN_EMBEDDING_MATRIX = False
+    GEN_EMBEDDING_MATRIX = True
 
     print("\nLoading in data...")
 
@@ -147,7 +143,7 @@ if __name__ == "__main__":
     test_df, _, _, _ = preprocess_data(test_df, data_type="test", le=le, ohe=ohe, tokenizer=tokenizer)
 
     # Save label_encoder (to be used during testing later)
-    pickle.dump(le, open("../../data/interim/label_encoder.pickle", "wb"))
+    pickle.dump(le, open(f"../../data/interim/{TASK}_label_encoder.pickle", "wb"))
 
     # Output preprocessed data
     train_df.to_csv(f"../../data/interim/task_{TASK}_train_preprocessed_text.csv", index=False)
@@ -161,19 +157,19 @@ if __name__ == "__main__":
     word_index = tokenizer.word_index
 
     # Save word_index
-    pickle.dump(word_index, open("../../data/interim/word_index.pickle", "wb"))
+    pickle.dump(word_index, open(f"../../data/interim/{TASK}_word_index.pickle", "wb"))
     
     # Generate or read in embedding matrix 
     # embedding_matrix = MxN matrix, M = number of words in training corpus (len(word_index)), N = size of word2vec embeddings (300)
     if GEN_EMBEDDING_MATRIX is True:
         # Load in word2vec model
-        word2vec_model = KeyedVectors.load_word2vec_format('../../data/raw/crisisNLP_word2vec_model/crisisNLP_word_vector.bin', binary=True)
+        word2vec_model = KeyedVectors.load_word2vec_format("../../data/raw/crisisNLP_word2vec_model/crisisNLP_word_vector.bin", binary=True)
     
         # Generate word embeddings for words in word_index using the word2vec model
         embedding_matrix = generate_embedding_matrix(word2vec_model, word_index)
 
         # Save embedding matrix
-        np.save("../../data/interim/embedding_matrix.npy", embedding_matrix)
+        np.save(f"../../data/interim/{TASK}_embedding_matrix.npy", embedding_matrix)
     else:
-        embedding_matrix = np.load("../../data/interim/embedding_matrix.npy")
+        embedding_matrix = np.load(f"../../data/interim/{TASK}_embedding_matrix.npy")
 

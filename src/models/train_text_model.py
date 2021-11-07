@@ -12,52 +12,10 @@ import pandas as pd
 import pickle
 
 
-# def sentenceCNN(inputs, word_index, embedding_matrix):
-#     """
-#     Implementation of CNN for Sentence Classification by Yoon Kim.
-#     Source: https://www.kaggle.com/hamishdickson/cnn-for-sentence-classification-by-yoon-kim
-
-#     """
-
-#     embedding_dim = 300
-#     num_filters = 300
-#     sequence_length = 25
-
-#     # Embedding layer
-#     embedding_layer = Embedding(input_dim=len(word_index)+1, output_dim=embedding_dim, input_length=sequence_length, weights=[embedding_matrix], trainable=True)(inputs)
-
-#     # Reshape
-#     reshape = Reshape(target_shape=(sequence_length, embedding_dim, 1))(embedding_layer)
-
-#     # First convolutional layer
-#     conv_0 = Conv2D(filters=num_filters, kernel_size=(5, embedding_dim), activation="relu")(reshape)
-#     maxpool_0 = MaxPool2D(pool_size=(sequence_length - 5 + 1, 1))(conv_0)
-
-#     # Second convolutional layer
-#     conv_1 = Conv2D(filters=num_filters, kernel_size=(4, embedding_dim), activation="relu")(reshape)
-#     maxpool_1 = MaxPool2D(pool_size=(sequence_length - 4 + 1, 1))(conv_1)
-
-#     # Third convolutional layer
-#     conv_2 = Conv2D(filters=num_filters, kernel_size=(3, embedding_dim), activation="relu")(reshape)
-#     maxpool_2 = MaxPool2D(pool_size=(sequence_length - 3 + 1, 1))(conv_2)
-
-#     # Fourth convolutional layer
-#     conv_3 = Conv2D(filters=num_filters, kernel_size=(2, embedding_dim), activation="relu")(reshape)
-#     maxpool_3 = MaxPool2D(pool_size=(sequence_length - 2 + 1, 1))(conv_3)
-
-#     # Fifth convolutional layer
-#     conv_4 = Conv2D(filters=num_filters, kernel_size=(1, embedding_dim), activation="relu")(reshape)
-#     maxpool_4 = MaxPool2D(pool_size=(sequence_length - 1 + 1, 1))(conv_4)
-
-#     # Concatenate and flatten 
-#     concatenated_tensor = concatenate([])
-#     flatten = Flatten()(concatenated_tensor)
-
-
 if __name__ == "__main__":
 
-    TASK = "humanitarian"       # "humanitarian" or "informative"
-    SEED = 2021                    # Seed to be used for reproducability
+    TASK = "informative"       # "humanitarian" or "informative"
+    SEED = 2021                # Seed to be used for reproducability
 
     print("\nLoading in dataset, word_index, and embedding_matrix...")
 
@@ -82,10 +40,10 @@ if __name__ == "__main__":
     num_classes = len(train_df["int_label"].unique())
 
     # Load in word_index
-    word_index = pickle.load(open("../../data/interim/word_index.pickle", "rb"))
+    word_index = pickle.load(open(f"../../data/interim/{TASK}_word_index.pickle", "rb"))
 
     # Load in embedding matrix
-    embedding_matrix = np.load("../../data/interim/embedding_matrix.npy")
+    embedding_matrix = np.load(f"../../data/interim/{TASK}_embedding_matrix.npy")
 
     print("\nCreating CNN for Sentence Classification...")
 

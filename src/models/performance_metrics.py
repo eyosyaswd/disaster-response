@@ -3,13 +3,13 @@ import numpy as np
 import pickle
 
 
-def get_performance_metrics(true_y, pred_y, test_df):
+def get_performance_metrics(true_y, pred_y, test_df, task):
     # Get the index (aka int_label) with highest probability
     y_true = np.argmax(true_y, axis=1)
     y_pred = np.argmax(pred_y, axis=1)
 
     # Read in label_encoder preduced from training data
-    le = pickle.load(open("../../data/interim/label_encoder.pickle", "rb"))
+    le = pickle.load(open(f"../../data/interim/{task}_label_encoder.pickle", "rb"))
 
     # Convert labels from ints to string labels 
     y_true = le.inverse_transform(y_true)

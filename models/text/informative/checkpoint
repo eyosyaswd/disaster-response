@@ -1,0 +1,2 @@
+model_checkpoint_path: "informative_checkpoint"
+all_model_checkpoint_paths: "informative_checkpoint"
