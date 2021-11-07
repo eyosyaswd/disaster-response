@@ -1,0 +1,15 @@
+name: disaster-response
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python
+  - ipykernel
+  - pandas
+  - pillow
+  - tensorflow
+  - nltk
+  - scikit-learn
+  - numpy
+  - gensim
+prefix: /opt/anaconda3/envs/disaster-response

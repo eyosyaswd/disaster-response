@@ -22,12 +22,10 @@ if __name__ == "__main__":
     # Specify location of csv files containing preprocessed data
     train_filepath = f"../../data/interim/task_{TASK}_train_preprocessed_text.csv"
     val_filepath = f"../../data/interim/task_{TASK}_val_preprocessed_text.csv"
-    test_filepath = f"../../data/interim/task_{TASK}_test_preprocessed_text.csv"
 
     # Load in csv files containing preprocessed data
     train_df = pd.read_csv(train_filepath)
     val_df = pd.read_csv(val_filepath)
-    test_df = pd.read_csv(test_filepath)
 
     # Extract data and labels from dataset
     train_X = list(train_df["padded_sequence"].apply(literal_eval))
