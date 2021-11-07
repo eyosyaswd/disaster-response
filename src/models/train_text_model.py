@@ -1,7 +1,7 @@
 from ast import literal_eval
-from tensorflow.keras import callbacks
+from sentence_cnn import SentenceCNN
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
-from tensorflow.keras.layers import Input, Embedding, Reshape, Conv2D, MaxPool2D, Concatenate, concatenate, Flatten
+from tensorflow.keras.layers import Input
 from tensorflow.keras.layers import Activation, Dropout, Dense
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
@@ -54,45 +54,10 @@ import pickle
 #     flatten = Flatten()(concatenated_tensor)
 
 
-def sentenceCNN(inputs, word_index, embedding_matrix):
-    """
-    Implementation of CNN for Sentence Classification by Yoon Kim.
-    Source: https://www.kaggle.com/hamishdickson/cnn-for-sentence-classification-by-yoon-kim
-
-    """
-
-    embedding_dim = 300
-    num_filters = [100, 150, 200]
-    sequence_length = 25
-
-    # Embedding layer
-    embedding_layer = Embedding(input_dim=len(word_index)+1, output_dim=embedding_dim, input_length=sequence_length, weights=[embedding_matrix], trainable=True)(inputs)
-
-    # Reshape
-    reshape = Reshape(target_shape=(sequence_length, embedding_dim, 1))(embedding_layer)
-
-    # Convolution windows
-    conv_0 = Conv2D(filters=num_filters[0], kernel_size=(2, embedding_dim), padding="valid", kernel_initializer="normal", activation="relu")(reshape)
-    conv_1 = Conv2D(filters=num_filters[1], kernel_size=(3, embedding_dim), padding="valid", kernel_initializer="normal", activation="relu")(reshape)
-    conv_2 = Conv2D(filters=num_filters[2], kernel_size=(4, embedding_dim), padding="valid", kernel_initializer="normal", activation="relu")(reshape)
-    
-    # Perform max pooling on each of the convolutions
-    maxpool_0 = MaxPool2D(pool_size=(sequence_length - 2 + 1, 1), strides=(1,1), padding="valid")(conv_0)
-    maxpool_1 = MaxPool2D(pool_size=(sequence_length - 3 + 1, 1), strides=(1,1), padding="valid")(conv_1)
-    maxpool_2 = MaxPool2D(pool_size=(sequence_length - 4 + 1, 1), strides=(1,1), padding="valid")(conv_2)
-
-    # Concatenate and flatten 
-    concatenated_tensor = concatenate([maxpool_0, maxpool_1, maxpool_2])
-
-    flatten = Flatten()(concatenated_tensor)
-
-    return flatten
-
-
 if __name__ == "__main__":
 
     TASK = "humanitarian"       # "humanitarian" or "informative"
-    SEED = 0                    # Seed to be used for reproducability
+    SEED = 2021                    # Seed to be used for reproducability
 
     print("\nLoading in dataset, word_index, and embedding_matrix...")
 
@@ -126,7 +91,7 @@ if __name__ == "__main__":
 
     # Create CNN for sentence classification 
     inputs = Input(shape=(25,))
-    conv_layers = sentenceCNN(inputs, word_index, embedding_matrix)
+    conv_layers = SentenceCNN(inputs, word_index, embedding_matrix)
     activation_0 = Activation("relu")(conv_layers)
     dropout_0 = Dropout(0.02)(activation_0)
     dense_0 = Dense(100)(dropout_0)
@@ -151,8 +116,14 @@ if __name__ == "__main__":
     tensorboard = TensorBoard(log_dir=f"../../models/text/{TASK}", write_images=True)
 
     # Create model checkpoints
-    checkpoint = ModelCheckpoint(filepath=f"../../models/text/{TASK}/{TASK}.model", monitor="val_accuracy", save_best_only=True, save_weights_only=True, mode="max")
+    checkpoint_filepath = f"../../models/text/{TASK}/{TASK}_checkpoint"
+    checkpoint = ModelCheckpoint(filepath=checkpoint_filepath, monitor="val_accuracy", save_best_only=True, save_weights_only=True, mode="max")
 
     # Train and validate model
     history = model.fit(x=train_X, y=train_y, batch_size=128, epochs=50, validation_data=(val_X, val_y), callbacks=[early_stopping, tensorboard, checkpoint])
 
+    # Load model with best weights
+    model.load_weights(checkpoint_filepath)
+
+    # Save trained model with best weights
+    model.save(f"../../models/text/{TASK}/{TASK}.hdf5")

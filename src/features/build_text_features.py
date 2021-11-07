@@ -97,6 +97,9 @@ def preprocess_data(df, data_type, le=None, ohe=None, tokenizer=None):
     # Zero-pad the sequences
     df["padded_sequence"] = tf.keras.preprocessing.sequence.pad_sequences(sequences, maxlen=25).tolist()
 
+    # Shuffle data
+    df = df.sample(frac=1, random_state=SEED).reset_index(drop=True)
+
     return df, le, ohe, tokenizer
 
 
@@ -121,7 +124,7 @@ def generate_embedding_matrix(word2vec_model, word_index):
 if __name__ == "__main__":
 
     TASK = "humanitarian"       # "humanitarian" or "informative"
-    SEED = 0                    # Seed to be used for reproducability
+    SEED = 2021                    # Seed to be used for reproducability
     GEN_EMBEDDING_MATRIX = False
 
     print("\nLoading in data...")
@@ -142,6 +145,9 @@ if __name__ == "__main__":
     train_df, le, ohe, tokenizer = preprocess_data(train_df, data_type="train")
     val_df, _, _, _ = preprocess_data(val_df, data_type="val", le=le, ohe=ohe, tokenizer=tokenizer)
     test_df, _, _, _ = preprocess_data(test_df, data_type="test", le=le, ohe=ohe, tokenizer=tokenizer)
+
+    # Save label_encoder (to be used during testing later)
+    pickle.dump(le, open("../../data/interim/label_encoder.pickle", "wb"))
 
     # Output preprocessed data
     train_df.to_csv(f"../../data/interim/task_{TASK}_train_preprocessed_text.csv", index=False)
