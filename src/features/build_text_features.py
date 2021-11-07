@@ -1,4 +1,3 @@
-from nltk.corpus.util import TRY_ZIPFILE_FIRST
 from gensim.models import KeyedVectors
 from nltk.corpus import stopwords
 from nltk.tokenize import TweetTokenizer
@@ -9,6 +8,7 @@ import nltk
 import numpy as np
 import os
 import pandas as pd
+import pickle
 import re
 import tensorflow as tf
 from tensorflow.keras.preprocessing import sequence
@@ -77,11 +77,11 @@ def preprocess_data(df, data_type, le=None, ohe=None, tokenizer=None):
         # if training data, create encodings from scratch (fit and transform)
         le, ohe = LabelEncoder(), OneHotEncoder(sparse=False)
         df["int_label"] = le.fit_transform(df["label"])
-        df["onehot_label"] = list(ohe.fit_transform(np.array(df["int_label"]).reshape(-1,1)))
+        df["onehot_label"] = ohe.fit_transform(np.array(df["int_label"]).reshape(-1,1)).tolist()
     else:
         # if val or test data, use the encoders that were fit on training data (only transform)
         df["int_label"] = le.transform(df["label"])
-        df["onehot_label"] = list(ohe.transform(np.array(df["int_label"]).reshape(-1,1)))
+        df["onehot_label"] = ohe.transform(np.array(df["int_label"]).reshape(-1,1)).tolist()
 
     # Fit tokenizer
     if data_type == "train":
@@ -153,6 +153,9 @@ if __name__ == "__main__":
     # Get word_index dictionary which contains the training data corpus 
     # key: word, value: int b/t 1 and len(num of words in corpus) corresponding to word frequency (lower = more frequent) 
     word_index = tokenizer.word_index
+
+    # Save word_index
+    pickle.dump(word_index, open("../../data/interim/word_index.pickle", "wb"))
     
     # Generate or read in embedding matrix 
     # embedding_matrix = MxN matrix, M = number of words in training corpus (len(word_index)), N = size of word2vec embeddings (300)
