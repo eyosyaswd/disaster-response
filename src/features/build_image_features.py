@@ -71,7 +71,7 @@ def preprocess_data(df, data_type, le=None, ohe=None):
 
 if __name__ == "__main__":
 
-    TASK = "humanitarian"       # "humanitarian" or "informative"
+    TASK = "informative"       # "humanitarian" or "informative"
     SEED = 2021                 # Seed to be used for reproducability
 
     print("\nLoading in data...")
@@ -93,8 +93,8 @@ if __name__ == "__main__":
     val_df, _, _, val_X = preprocess_data(val_df, data_type="val", le=le, ohe=ohe)
     test_df, _, _, test_X = preprocess_data(test_df, data_type="test", le=le, ohe=ohe)
 
-    # # Save label_encoder (to be used during testing later)
-    # pickle.dump(le, open(f"../../data/interim/{TASK}_label_encoder.pickle", "wb"))
+    # Save label_encoder (to be used during testing later)
+    pickle.dump(le, open(f"../../data/interim/{TASK}_label_encoder.pickle", "wb"))
 
     # Output preprocessed data
     train_df.to_csv(f"../../data/interim/task_{TASK}_train_preprocessed_image.csv", index=False)

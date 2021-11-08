@@ -8,13 +8,18 @@ from tensorflow.keras.optimizers import Adam
 import numpy as np
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'    # Ignore tf info messages
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'    # Ignore tf warning messages
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'    # Ignore tf warning messages
 import pandas as pd
 import pickle
+import tensorflow as tf
+
+print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 
 
 if __name__ == "__main__":
 
-    TASK = "humanitarian"       # "humanitarian" or "informative"
+    TASK = "informative"       # "humanitarian" or "informative"
     SEED = 2021                # Seed to be used for reproducability
 
     print("\nLoading in dataset...")
@@ -69,10 +74,10 @@ if __name__ == "__main__":
     checkpoint = ModelCheckpoint(filepath=checkpoint_filepath, monitor="val_accuracy", save_best_only=True, save_weights_only=True, mode="max")
 
     # Train and validate model
-    history = model.fit(x=train_X, y=train_y, batch_size=1, epochs=1, validation_data=(val_X, val_y), callbacks=[lr_reducer, early_stopping, tensorboard, checkpoint])
+    history = model.fit(x=train_X, y=train_y, batch_size=1, epochs=10, validation_data=(val_X, val_y), validation_batch_size=1, callbacks=[lr_reducer, early_stopping, tensorboard, checkpoint])
 
-    # # Load model with best weights
-    # model.load_weights(checkpoint_filepath)
+    # Load model with best weights
+    model.load_weights(checkpoint_filepath)
 
-    # # Save trained model with best weights
-    # model.save(f"../../models/image/{TASK}/{TASK}.hdf5")
+    # Save trained model with best weights
+    model.save(f"../../models/image/{TASK}/{TASK}.hdf5")
