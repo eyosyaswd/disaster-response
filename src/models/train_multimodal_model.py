@@ -1,4 +1,4 @@
-from custom_dataset import My_Data_Generator
+from custom_dataset import Multimodal_Data_Generator
 from sentence_cnn import SentenceCNN
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau
@@ -28,8 +28,8 @@ if __name__ == "__main__":
 
     # NOTE: we're not going to load the actual datasets here. Too many OOM errors.
     # Instead, we're going to load the data into memory during training using data generators. 
-    train_data_gen = My_Data_Generator(train_df, batch_size=4)
-    val_data_gen = My_Data_Generator(val_df, batch_size=4)
+    train_data_gen = Multimodal_Data_Generator(train_df, batch_size=4)
+    val_data_gen = Multimodal_Data_Generator(val_df, batch_size=4)
 
     # Get the number of classes
     num_classes = len(train_df["int_label"].unique())

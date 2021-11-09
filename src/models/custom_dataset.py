@@ -37,7 +37,28 @@ def preprocess_image(img_filepath):
     return img
 
 
-class My_Data_Generator(keras.utils.Sequence):
+class Image_Data_Generator(keras.utils.Sequence):
+
+    def __init__(self, data_df, batch_size, scale=224) :
+        self.data_df = data_df
+        self.batch_size = batch_size
+        self.scale = (scale, scale)
+
+    def __len__(self) :
+        return (np.ceil(len(self.data_df) / float(self.batch_size))).astype(np.int)
+
+    def __getitem__(self, idx):
+
+        # Read in image data
+        batch_image_X = [preprocess_image(img_filepath) for img_filepath in self.data_df.iloc[idx * self.batch_size : (idx+1) * self.batch_size]["image"]]
+
+        # Read in labels for current batch
+        batch_y = list(self.data_df.iloc[idx * self.batch_size : (idx+1) * self.batch_size]["onehot_label"].apply(literal_eval))
+
+        return np.asarray(batch_image_X), np.asarray(batch_y)
+
+
+class Multimodal_Data_Generator(keras.utils.Sequence):
 
     def __init__(self, data_df, batch_size, scale=224) :
         self.data_df = data_df

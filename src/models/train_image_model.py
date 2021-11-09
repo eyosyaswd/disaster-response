@@ -1,4 +1,5 @@
 from ast import literal_eval
+from custom_dataset import Image_Data_Generator
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from tensorflow.keras.layers import Dense
@@ -31,14 +32,11 @@ if __name__ == "__main__":
     train_df = pd.read_csv(train_filepath)
     val_df = pd.read_csv(val_filepath)
 
-    # Load in images and extract labels from dataset
-    train_X = np.load(f"../../data/interim/task_{TASK}_train_preprocessed_image.npy", allow_pickle=True)
-    train_y = np.asarray(list(train_df["onehot_label"].apply(literal_eval)))
-    val_X = np.load(f"../../data/interim/task_{TASK}_val_preprocessed_image.npy", allow_pickle=True)
-    val_y = np.asarray(list(val_df["onehot_label"].apply(literal_eval)))
+    # Load in image data generators
+    train_data_gen = Image_Data_Generator(train_df, batch_size=4)
+    val_data_gen = Image_Data_Generator(val_df, batch_size=4)
 
     # Get the number of classes
-    # print(train_df["label"])
     num_classes = len(train_df["int_label"].unique())
 
     print("\nCreating VGG16 model...")
@@ -73,7 +71,7 @@ if __name__ == "__main__":
     checkpoint = ModelCheckpoint(filepath=checkpoint_filepath, monitor="val_accuracy", save_best_only=True, save_weights_only=True, mode="max")
 
     # Train and validate model
-    history = model.fit(x=train_X, y=train_y, batch_size=1, epochs=10, validation_data=(val_X, val_y), validation_batch_size=1, callbacks=[lr_reducer, early_stopping, tensorboard, checkpoint])
+    history = model.fit(x=train_data_gen, epochs=10, validation_data=val_data_gen, callbacks=[lr_reducer, early_stopping, tensorboard, checkpoint])
 
     # Load model with best weights
     model.load_weights(checkpoint_filepath)
