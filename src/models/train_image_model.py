@@ -1,5 +1,4 @@
 from ast import literal_eval
-from tensorflow.keras.applications import vgg16
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from tensorflow.keras.layers import Dense
@@ -52,16 +51,16 @@ if __name__ == "__main__":
     output_layer = Dense(num_classes, activation="softmax")(fc2)
     model = Model(inputs=vgg16_model.input, outputs=output_layer)
 
+    print(model.summary())
+
     # Initialize Adam optimizer
     adam = Adam(learning_rate=1e-6)
-
-    # Initialize learning rate reducer
-    lr_reducer = ReduceLROnPlateau(monitor="val_accuracy", factor=0.1, patience=10, verbose=1, mode="max")
     
     # Config model with losses and metrics
     model.compile(optimizer=adam, loss="categorical_crossentropy", metrics=["accuracy"])
 
-    print(model.summary())
+    # Initialize learning rate reducer
+    lr_reducer = ReduceLROnPlateau(monitor="val_accuracy", factor=0.1, patience=10, verbose=1, mode="max")
 
     # Set early-stopping criterion based on the accuracy on the development set with the patience of 10
     early_stopping = EarlyStopping(monitor="val_accuracy", patience=10, verbose=1, mode="max")

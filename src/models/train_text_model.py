@@ -34,7 +34,6 @@ if __name__ == "__main__":
     val_y = list(val_df["onehot_label"].apply(literal_eval))
 
     # Get the number of classes
-    # print(train_df["label"])
     num_classes = len(train_df["int_label"].unique())
 
     # Load in word_index
@@ -57,13 +56,13 @@ if __name__ == "__main__":
     output_layer = Dense(num_classes, activation="softmax")(activation_2)
     model = Model(inputs=inputs, outputs=output_layer)
 
+    print(model.summary())
+
     # Initialize Adam optimizer
     adam = Adam(learning_rate=0.01)
     
     # Config model with losses and metrics
     model.compile(optimizer=adam, loss="categorical_crossentropy", metrics=["accuracy"])
-
-    print(model.summary())
 
     # Set early-stopping criterion based on the accuracy on the development set with the patience of 10
     early_stopping = EarlyStopping(monitor="val_accuracy", patience=10, mode="max")

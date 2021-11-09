@@ -31,6 +31,6 @@ def SentenceCNN(inputs, word_index, embedding_matrix):
     # Concatenate and flatten 
     concatenated_tensor = concatenate([maxpool_0, maxpool_1, maxpool_2])
 
-    flatten = Flatten()(concatenated_tensor)
+    flatten = Flatten(name="flatten_text")(concatenated_tensor)
 
     return flatten
