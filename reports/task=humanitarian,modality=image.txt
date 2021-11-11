@@ -1,0 +1,28 @@
+
+Classification Report:
+                                        precision    recall  f1-score   support
+
+                  affected_individuals       0.50      0.11      0.18         9
+     infrastructure_and_utility_damage       0.77      0.68      0.72        81
+                      not_humanitarian       0.80      0.89      0.84       504
+            other_relevant_information       0.81      0.78      0.79       235
+rescue_volunteering_or_donation_effort       0.68      0.50      0.58       126
+
+                              accuracy                           0.79       955
+                             macro avg       0.71      0.59      0.62       955
+                          weighted avg       0.78      0.79      0.78       955
+
+Confusion Matrix:
+[[  1   0   4   0   4]
+ [  0  55  13   9   4]
+ [  1   7 449  28  19]
+ [  0   3  47 183   2]
+ [  0   6  50   7  63]]
+
+Accuracy Score: 0.7863874345549738
+
+Precision Score: 0.7800263254533106
+
+Recall Score: 0.7863874345549738
+
+F1 Score: 0.7784520942846194

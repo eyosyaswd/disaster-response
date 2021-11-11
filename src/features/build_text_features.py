@@ -119,7 +119,7 @@ def generate_embedding_matrix(word2vec_model, word_index):
 
 if __name__ == "__main__":
 
-    TASK = "informative"       # "humanitarian" or "informative"
+    TASK = "humanitarian"       # "humanitarian" or "informative"
     SEED = 2021                    # Seed to be used for reproducability
     GEN_EMBEDDING_MATRIX = True
 

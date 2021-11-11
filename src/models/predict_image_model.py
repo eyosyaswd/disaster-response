@@ -14,7 +14,7 @@ import pickle
 
 if __name__ == "__main__":
 
-    TASK = "informative"
+    TASK = "humanitarian"
 
     print("\nLoading in testing data...")
 
@@ -53,5 +53,5 @@ if __name__ == "__main__":
     print("\nGetting performance metrics...")
 
     # Get performance metrics
-    get_performance_metrics(test_y, pred_y, test_df, TASK)
+    get_performance_metrics(test_y, pred_y, test_df, TASK, "image")
     

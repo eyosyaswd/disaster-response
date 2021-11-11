@@ -83,7 +83,7 @@ if __name__ == "__main__":
     model.compile(optimizer=adam, loss="categorical_crossentropy", metrics=["accuracy"])
 
     # Initialize learning rate reducer
-    lr_reducer = ReduceLROnPlateau(monitor="val_accuracy", factor=0.1, patience=10, verbose=1, mode="max")
+    lr_reducer = ReduceLROnPlateau(monitor="val_accuracy", factor=0.1, patience=5, verbose=1, mode="max")
 
     # Set early-stopping criterion based on the accuracy on the development set with the patience of 10
     early_stopping = EarlyStopping(monitor="val_accuracy", patience=10, verbose=1, mode="max")
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     checkpoint = ModelCheckpoint(filepath=checkpoint_filepath, monitor="val_accuracy", save_best_only=True, save_weights_only=True, mode="max")
 
     # Train and validate model
-    history = model.fit(x=train_data_gen, epochs=10, validation_data=val_data_gen, callbacks=[lr_reducer, early_stopping, tensorboard, checkpoint])
+    history = model.fit(x=train_data_gen, epochs=50, validation_data=val_data_gen, callbacks=[lr_reducer, early_stopping, tensorboard, checkpoint])
 
     # Load model with best weights
     model.load_weights(checkpoint_filepath)

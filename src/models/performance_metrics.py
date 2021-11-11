@@ -3,7 +3,7 @@ import numpy as np
 import pickle
 
 
-def get_performance_metrics(true_y, pred_y, test_df, task):
+def get_performance_metrics(true_y, pred_y, test_df, task, modality):
     # Get the index (aka int_label) with highest probability
     y_true = np.argmax(true_y, axis=1)
     y_pred = np.argmax(pred_y, axis=1)
@@ -30,3 +30,11 @@ def get_performance_metrics(true_y, pred_y, test_df, task):
     print("\nRecall Score:", rec_score)
     print("\nF1 Score:", f1)
 
+    performance_file = open(f"../../reports/task={task},modality={modality}.txt", "w")
+    performance_file.write(f"\nClassification Report:\n{class_report}")
+    performance_file.write(f"\nConfusion Matrix:\n{conf_matrix}")
+    performance_file.write(f"\n\nAccuracy Score: {acc_score}")
+    performance_file.write(f"\n\nPrecision Score: {prec_score}")
+    performance_file.write(f"\n\nRecall Score: {rec_score}")
+    performance_file.write(f"\n\nF1 Score: {f1}")
+    performance_file.close()
