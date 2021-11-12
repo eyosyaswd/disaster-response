@@ -28,8 +28,8 @@ if __name__ == "__main__":
 
     # NOTE: we're not going to load the actual datasets here. Too many OOM errors.
     # Instead, we're going to load the data into memory during training using data generators. 
-    train_data_gen = Multimodal_Data_Generator(train_df, batch_size=4)
-    val_data_gen = Multimodal_Data_Generator(val_df, batch_size=4)
+    train_data_gen = Multimodal_Data_Generator(train_df, batch_size=16)
+    val_data_gen = Multimodal_Data_Generator(val_df, batch_size=16)
 
     # Get the number of classes
     num_classes = len(train_df["int_label"].unique())
@@ -70,14 +70,14 @@ if __name__ == "__main__":
     dense_0_multimodal = Dense(500, activation="relu")(dropout_0_multimodal)
     dropout_1_multimodal = Dropout(0.2)(dense_0_multimodal)
     dense_1_multimodal = Dense(100, activation="relu")(dropout_1_multimodal)
-    dropout_2_multimodal = Dropout(0.2)(dense_1_multimodal)
+    dropout_2_multimodal = Dropout(0.02)(dense_1_multimodal)
     output_layer = Dense(num_classes, activation="softmax")(dropout_2_multimodal)
     model = Model(inputs=[vgg16_model.input, text_inputs], outputs=output_layer)
 
     print(model.summary())
 
     # Initialize Adam optimizer
-    adam = Adam(learning_rate=0.01)     # NOTE: not specified in paper
+    adam = Adam(learning_rate=0.00001)     # NOTE: not specified in paper
 
     # Config model with losses and metrics
     model.compile(optimizer=adam, loss="categorical_crossentropy", metrics=["accuracy"])
