@@ -2,21 +2,21 @@
 Classification Report:
                  precision    recall  f1-score   support
 
-    informative       0.67      1.00      0.80      1030
-not_informative       0.00      0.00      0.00       504
+    informative       0.83      0.91      0.87      1030
+not_informative       0.78      0.63      0.70       504
 
-       accuracy                           0.67      1534
-      macro avg       0.34      0.50      0.40      1534
-   weighted avg       0.45      0.67      0.54      1534
+       accuracy                           0.82      1534
+      macro avg       0.81      0.77      0.78      1534
+   weighted avg       0.82      0.82      0.81      1534
 
 Confusion Matrix:
-[[1030    0]
- [ 504    0]]
+[[941  89]
+ [187 317]]
 
-Accuracy Score: 0.6714471968709257
+Accuracy Score: 0.8200782268578879
 
-Precision Score: 0.45084133818582367
+Precision Score: 0.816664729647992
 
-Recall Score: 0.6714471968709257
+Recall Score: 0.8200782268578879
 
-F1 Score: 0.5394622564563599
+F1 Score: 0.8144754728471605

@@ -13,7 +13,7 @@ import pickle
 
 if __name__ == "__main__":
 
-    TASK = "humanitarian"       # "humanitarian" or "informative"
+    TASK = "informative"       # "humanitarian" or "informative"
     SEED = 2021                # Seed to be used for reproducability
 
     print("\nLoading in training and validation datasets...")
