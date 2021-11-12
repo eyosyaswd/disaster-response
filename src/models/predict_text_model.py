@@ -8,7 +8,7 @@ import pandas as pd
 
 if __name__ == "__main__":
 
-    TASK = "informative"
+    TASK = "humanitarian"
 
     print("\nLoading in testing data...")
 

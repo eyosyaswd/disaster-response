@@ -38,3 +38,6 @@ def get_performance_metrics(true_y, pred_y, test_df, task, modality):
     performance_file.write(f"\n\nRecall Score: {rec_score}")
     performance_file.write(f"\n\nF1 Score: {f1}")
     performance_file.close()
+
+    test_df[f"{modality}_prediction"] = y_pred
+    test_df.to_csv(f"../../data/processed/task={task},modality={modality},predictions.csv", index=False)

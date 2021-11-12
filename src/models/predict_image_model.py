@@ -14,7 +14,7 @@ import pickle
 
 if __name__ == "__main__":
 
-    TASK = "humanitarian"
+    TASK = "informative"
 
     print("\nLoading in testing data...")
 
