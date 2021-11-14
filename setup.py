@@ -4,7 +4,7 @@ setup(
     name='src',
     packages=find_packages(),
     version='0.1.0',
-    description='Implementation of the paper 'Analysis of Social Media Data using Multimodal Deep Learning for Disaster Response'',
+    description='Implementation of the paper "Analysis of Social Media Data using Multimodal Deep Learning for Disaster Response"',
     author='Eyosyas',
     license='',
 )

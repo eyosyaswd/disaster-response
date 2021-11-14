@@ -3,7 +3,7 @@ from sentence_cnn import SentenceCNN
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from tensorflow.keras.layers import Input
-from tensorflow.keras.layers import Dropout, Dense, BatchNormalization, concatenate
+from tensorflow.keras.layers import Dropout, Dense, BatchNormalization, concatenate, Activation
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 import numpy as np
@@ -13,7 +13,7 @@ import pickle
 
 if __name__ == "__main__":
 
-    TASK = "informative"       # "humanitarian" or "informative"
+    TASK = "humanitarian"       # "humanitarian" or "informative"
     SEED = 2021                # Seed to be used for reproducability
 
     print("\nLoading in training and validation datasets...")
@@ -50,8 +50,11 @@ if __name__ == "__main__":
     # Create CNN for sentence classification 
     text_inputs = Input(shape=(25,))
     conv_layers = SentenceCNN(text_inputs, word_index, embedding_matrix)
-    dense_text = Dense(1000, activation="relu")(conv_layers)
-    batchnorm_text = BatchNormalization()(dense_text)
+    activation_0 = Activation("relu")(conv_layers)
+    dropout_0 = Dropout(0.02)(activation_0)
+    dense_0_text = Dense(2000, activation="relu")(dropout_0)
+    dense_1_text = Dense(1000, activation="relu")(dense_0_text)
+    batchnorm_text = BatchNormalization()(dense_1_text)
 
     print("\nCreating image mode...")
 

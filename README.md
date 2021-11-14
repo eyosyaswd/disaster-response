@@ -3,54 +3,72 @@ disaster-response
 
 Implementation of the paper 'Analysis of Social Media Data using Multimodal Deep Learning for Disaster Response'
 
+To run the code:
+1. Download dataset related files:
+    - Go to https://crisisnlp.qcri.org/crisismmd and download "CrisisMMD dataset version v2.0" and "Datasplit for multimodal baseline results with agreed labels." 
+    - Go to https://crisisnlp.qcri.org/lrec2016/lrec2016.html and download "Word2vec embeddings trained using crisis-related tweets".
+    - Save the unzipped version of the downloaded folders into disaster-response/data/raw/. They should have the same folder names as shown below. 
+2. Download the required libraries (listed in conda_requirements.yml). You can use the following command if you want a conda environment: 
+```
+conda create -n disaster-response -f conda_requirements.yml
+```
+3. Build features (modality = [text, image]): 
+```
+cd src/features/
+python build_[modality]_features.py
+```
+4. Train models (modality = [text, image, multimodal]):
+```
+cd src/models/
+python train_[modality]_model.py
+```
+5. Test models (modality = [text, image, multimodal]):
+```
+cd src/models/
+python predict_[modality]_model.py
+```
+Preprocessed data will be outputted in data/interim/, predictions will be outputted in data/processed/, and performance metrics will be outputted in reports/.
+You can specify the task ("humanitarian" or "informative") in each of the .py files mentioned above. The text model can be run on CPU, but a GPU is highly recommended to run the image or multimodal models. 
+
+----------------------------------
+
 Project Organization
 ------------
 
     ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
-    ├── README.md          <- The top-level README for developers using this project.
+    ├── README.md          <- Instructions on how to run the code.
     ├── data
-    │   ├── external       <- Data from third party sources.
     │   ├── interim        <- Intermediate data that has been transformed.
-    │   ├── processed      <- The final, canonical data sets for modeling.
+    │   ├── processed      <- Final predictions of the test data.
     │   └── raw            <- The original, immutable data dump.
+    |       ├── crisismmd_datasplit_agreed_label
+    |       ├── CrisisMMD_v2.0
+    |       └── crisisNLP_word2vec_model
     │
-    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
+    ├── models             <- Trained models. 
     │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
+    ├── notebooks          <- Jupyter notebooks. 
     │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
+    ├── references         <- Implemented paper can be found here.
     │
-    ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
+    ├── reports            <- Generated analysis. 
+    |                         Written report and performance metrics of models found here.
     │
-    ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-    │   └── figures        <- Generated graphics and figures to be used in reporting
-    │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
+    ├── conda_requirements.yml   <- The requirements file for reproducing the analysis environment. 
     │
     ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
-    ├── src                <- Source code for use in this project.
-    │   ├── __init__.py    <- Makes src a Python module
-    │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
-    │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
-    │
-    └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
-
+    └── src                <- Source code for use in this project.
+        ├── __init__.py    <- Makes src a Python module
+        │
+        ├── features       <- Scripts to turn raw data into features for modeling
+        │   └── build_[modality]_features.py
+        │
+        └── models         <- Scripts to train models and then use trained models to make
+            │                 predictions. Also scripts for creating data generators or NN architectures.
+            ├── custom_dataset.py 
+            ├── predict_[modality]_model.py
+            ├── sentence_cnn.py 
+            └── train_[modality]_model.py
 
 --------
 
