@@ -3,6 +3,23 @@ disaster-response
 
 Implementation of the paper 'Analysis of Social Media Data using Multimodal Deep Learning for Disaster Response'
 
+```bib
+@inproceedings{multimodalbaseline2020,
+  Author = {Ferda Ofli and Firoj Alam and Muhammad Imran},
+  Booktitle = {17th International Conference on Information Systems for Crisis Response and Management},
+  Keywords = {Multimodal deep learning, Multimedia content, Natural disasters, Crisis Computing, Social media},
+  Month = {May},
+  Organization = {ISCRAM},
+  Publisher = {ISCRAM},
+  Title = {Analysis of Social Media Data using Multimodal Deep Learning for Disaster Response},
+  Year = {2020}
+}
+```
+
+----------------------------------
+
+## Instructions
+
 To run the code:
 1. Download dataset related files:
     - Go to https://crisisnlp.qcri.org/crisismmd and download "CrisisMMD dataset version v2.0" and "Datasplit for multimodal baseline results with agreed labels." 
