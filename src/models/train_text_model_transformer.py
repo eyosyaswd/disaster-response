@@ -2,7 +2,7 @@ from ast import literal_eval
 from sentence_cnn import SentenceCNN
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
 from tensorflow.keras.layers import Input
-from tensorflow.keras.layers import Activation, Dropout, Dense
+from tensorflow.keras.layers import Activation, Dropout, Dense, GlobalAveragePooling1D, Layer, MultiHeadAttention, LayerNormalization, Embedding
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 import numpy as np
@@ -11,22 +11,20 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'    # Ignore tf info messages
 import pandas as pd
 import pickle
 import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers
 import sys
 
 
-class TransformerBlock(layers.Layer):
+class TransformerBlock(Layer):
     def __init__(self, embed_dim, num_heads, ff_dim, rate=0.1):
         super(TransformerBlock, self).__init__()
-        self.att = layers.MultiHeadAttention(num_heads=num_heads, key_dim=embed_dim)
-        self.ffn = keras.Sequential(
-            [layers.Dense(ff_dim, activation="relu"), layers.Dense(embed_dim),]
+        self.att = MultiHeadAttention(num_heads=num_heads, key_dim=embed_dim)
+        self.ffn = tf.keras.Sequential(
+            [Dense(ff_dim, activation="relu"), Dense(embed_dim),]
         )
-        self.layernorm1 = layers.LayerNormalization(epsilon=1e-6)
-        self.layernorm2 = layers.LayerNormalization(epsilon=1e-6)
-        self.dropout1 = layers.Dropout(rate)
-        self.dropout2 = layers.Dropout(rate)
+        self.layernorm1 = LayerNormalization(epsilon=1e-6)
+        self.layernorm2 = LayerNormalization(epsilon=1e-6)
+        self.dropout1 = Dropout(rate)
+        self.dropout2 = Dropout(rate)
 
     def call(self, inputs, training):
         attn_output = self.att(inputs, inputs)
@@ -35,13 +33,25 @@ class TransformerBlock(layers.Layer):
         ffn_output = self.ffn(out1)
         ffn_output = self.dropout2(ffn_output, training=training)
         return self.layernorm2(out1 + ffn_output)
+    
+    def get_config(self):
+            config = super().get_config().copy()
+            config.update({
+                'att': self.att,
+                'ffn': self.ffn,
+                'layernorm1': self.layernorm1,
+                'layernorm2': self.layernorm2,
+                'dropout1': self.dropout1,
+                'dropout2': self.dropout2
+            })
+            return config
 
 
-class TokenAndPositionEmbedding(layers.Layer):
+class TokenAndPositionEmbedding(Layer):
     def __init__(self, maxlen, vocab_size, embed_dim):
         super(TokenAndPositionEmbedding, self).__init__()
-        self.token_emb = layers.Embedding(input_dim=vocab_size, output_dim=embed_dim)
-        self.pos_emb = layers.Embedding(input_dim=maxlen, output_dim=embed_dim)
+        self.token_emb = Embedding(input_dim=vocab_size, output_dim=embed_dim)
+        self.pos_emb = Embedding(input_dim=maxlen, output_dim=embed_dim)
 
     def call(self, x):
         maxlen = tf.shape(x)[-1]
@@ -49,6 +59,14 @@ class TokenAndPositionEmbedding(layers.Layer):
         positions = self.pos_emb(positions)
         x = self.token_emb(x)
         return x + positions
+    
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({
+            'token_emb': self.token_emb,
+            'pos_emb': self.pos_emb
+        })
+        return config
 
 
 if __name__ == "__main__":
@@ -77,7 +95,8 @@ if __name__ == "__main__":
 
     # Load in word_index
     word_index = pickle.load(open(f"../../data/interim/{TASK}_word_index.pickle", "rb"))
-    vocab_size = len(word_index)    # Only consider this many words
+    # vocab_size = len(word_index)    # Only consider this many words
+    vocab_size = 20000
     print("vocab_size =", vocab_size)
 
     # Load in embedding matrix
@@ -94,17 +113,17 @@ if __name__ == "__main__":
 
     print("\nCreating Transformer for Sentence Classification...")
 
-    inputs = layers.Input(shape=(maxlen,))
+    inputs = Input(shape=(maxlen,))
     embedding_layer = TokenAndPositionEmbedding(maxlen, vocab_size, embed_dim)
     x = embedding_layer(inputs)
     transformer_block = TransformerBlock(embed_dim, num_heads, ff_dim)
     x = transformer_block(x)
-    x = layers.GlobalAveragePooling1D()(x)
-    x = layers.Dropout(0.1)(x)
-    x = layers.Dense(20, activation="relu")(x)
-    x = layers.Dropout(0.1)(x)
-    outputs = layers.Dense(num_classes, activation="softmax")(x)
-    model = keras.Model(inputs=inputs, outputs=outputs)
+    x = GlobalAveragePooling1D()(x)
+    x = Dropout(0.1)(x)
+    x = Dense(20, activation="relu")(x)
+    x = Dropout(0.1)(x)
+    outputs = Dense(num_classes, activation="softmax")(x)
+    model = Model(inputs=inputs, outputs=outputs)
 
     # # Create CNN for sentence classification 
     # inputs = Input(shape=(25,))
@@ -124,7 +143,7 @@ if __name__ == "__main__":
     
     # Config model with losses and metrics
     # model.compile(optimizer=adam, loss="categorical_crossentropy", metrics=["accuracy"])
-    model.compile(optimizer=adam, loss="sparse_categorical_crossentropy", metrics=["accuracy"])
+    model.compile(optimizer=adam, loss="categorical_crossentropy", metrics=["accuracy"])
 
 
     # Set early-stopping criterion based on the accuracy on the development set with the patience of 10
@@ -138,7 +157,7 @@ if __name__ == "__main__":
     checkpoint = ModelCheckpoint(filepath=checkpoint_filepath, monitor="val_accuracy", save_best_only=True, save_weights_only=True, mode="max")
 
     # Train and validate model
-    history = model.fit(x=train_X, y=train_y, batch_size=32, epochs=2, validation_data=(val_X, val_y), callbacks=[early_stopping, tensorboard, checkpoint])
+    history = model.fit(x=train_X, y=train_y, batch_size=128, epochs=1, validation_data=(val_X, val_y), callbacks=[early_stopping, tensorboard, checkpoint])
 
     # Load model with best weights
     model.load_weights(checkpoint_filepath)
