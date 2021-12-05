@@ -82,6 +82,7 @@ data/external/
 
 # exclue trained models and checkpoints
 /models/
+/models-improved/
 
 # Mac OS-specific storage files
 .DS_Store
