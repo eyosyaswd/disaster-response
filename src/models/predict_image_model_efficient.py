@@ -1,6 +1,6 @@
 from ast import literal_eval
+from custom_dataset import Image_Data_Generator
 from performance_metrics import get_performance_metrics
-from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import load_model, Model
 import numpy as np
@@ -14,7 +14,7 @@ import pickle
 
 if __name__ == "__main__":
 
-    TASK = "informative"
+    TASK = "humanitarian"
 
     print("\nLoading in testing data...")
 
@@ -27,7 +27,8 @@ if __name__ == "__main__":
     num_classes = len(le.classes_)
 
     # Extract data and labels from dataset
-    test_X = np.load(f"../../data/interim/task_{TASK}_test_preprocessed_image.npy", allow_pickle=True)
+    # test_X = np.load(f"../../data/interim/task_{TASK}_test_preprocessed_image.npy", allow_pickle=True)
+    test_X = Image_Data_Generator(test_df, batch_size=1, scale=600)
     test_y = np.asarray(list(test_df["onehot_label"].apply(literal_eval)))
     
     print("\nLoading in trained model...")
@@ -48,7 +49,7 @@ if __name__ == "__main__":
     print("\nPredicting testing data...")
     
     # Predict testing data using trained model
-    pred_y = trained_model.predict(test_X, batch_size=1)
+    pred_y = trained_model.predict(test_X)
 
     print("\nGetting performance metrics...")
 

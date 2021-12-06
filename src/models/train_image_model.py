@@ -13,6 +13,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'    # Ignore tf warning messages
 import pandas as pd
 import pickle
 import tensorflow as tf
+import sys
 
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 
@@ -43,6 +44,8 @@ if __name__ == "__main__":
 
     # Create VGG16 model
     vgg16_model = VGG16(weights="imagenet")
+    # print(vgg16_model.summary())
+    # sys.exit()
 
     # Change last layer from 1000 outputs to num_classes
     fc2 = vgg16_model.get_layer("fc2").output
@@ -50,6 +53,7 @@ if __name__ == "__main__":
     model = Model(inputs=vgg16_model.input, outputs=output_layer)
 
     print(model.summary())
+    # sys.exit()
 
     # Initialize Adam optimizer
     adam = Adam(learning_rate=1e-6)
