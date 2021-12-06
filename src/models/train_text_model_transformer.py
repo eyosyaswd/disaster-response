@@ -1,6 +1,6 @@
 from ast import literal_eval
 from sentence_cnn import SentenceCNN
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 from tensorflow.keras.layers import Input
 from tensorflow.keras.layers import Activation, Dropout, Dense, GlobalAveragePooling1D, Layer, MultiHeadAttention, LayerNormalization, Embedding
 from tensorflow.keras.models import Model
@@ -71,7 +71,7 @@ class TokenAndPositionEmbedding(Layer):
 
 if __name__ == "__main__":
 
-    TASK = "informative"       # "humanitarian" or "informative"
+    TASK = "humanitarian"       # "humanitarian" or "informative"
     SEED = 2021                # Seed to be used for reproducability
 
     print("\nLoading in dataset, word_index, and embedding_matrix...")
@@ -119,9 +119,9 @@ if __name__ == "__main__":
     transformer_block = TransformerBlock(embed_dim, num_heads, ff_dim)
     x = transformer_block(x)
     x = GlobalAveragePooling1D()(x)
-    x = Dropout(0.1)(x)
+    x = Dropout(0.2)(x)
     x = Dense(20, activation="relu")(x)
-    x = Dropout(0.1)(x)
+    x = Dropout(0.2)(x)
     outputs = Dense(num_classes, activation="softmax")(x)
     model = Model(inputs=inputs, outputs=outputs)
 
@@ -139,12 +139,14 @@ if __name__ == "__main__":
     # sys.exit()
 
     # Initialize Adam optimizer
-    adam = Adam(learning_rate=0.01)
+    adam = Adam(learning_rate=0.001)
     
     # Config model with losses and metrics
     # model.compile(optimizer=adam, loss="categorical_crossentropy", metrics=["accuracy"])
     model.compile(optimizer=adam, loss="categorical_crossentropy", metrics=["accuracy"])
 
+    # Initialize learning rate reducer
+    lr_reducer = ReduceLROnPlateau(monitor="val_accuracy", factor=0.1, patience=5, verbose=1, mode="max")
 
     # Set early-stopping criterion based on the accuracy on the development set with the patience of 10
     early_stopping = EarlyStopping(monitor="val_accuracy", patience=10, mode="max")
@@ -157,7 +159,7 @@ if __name__ == "__main__":
     checkpoint = ModelCheckpoint(filepath=checkpoint_filepath, monitor="val_accuracy", save_best_only=True, save_weights_only=True, mode="max")
 
     # Train and validate model
-    history = model.fit(x=train_X, y=train_y, batch_size=128, epochs=1, validation_data=(val_X, val_y), callbacks=[early_stopping, tensorboard, checkpoint])
+    history = model.fit(x=train_X, y=train_y, batch_size=128, epochs=50, validation_data=(val_X, val_y), callbacks=[lr_reducer, early_stopping, tensorboard, checkpoint])
 
     # Load model with best weights
     model.load_weights(checkpoint_filepath)
