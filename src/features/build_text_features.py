@@ -32,6 +32,11 @@ def preprocess_text(text):
     # Convert text to lowercase
     cleaned_text = text.lower()
 
+    # # Remove RT and the name of the accounts that was retweeted (decreased performance)
+    # remove_rt = re.compile("rt \@\w+: ")
+    # if cleaned_text.startswith("rt "):
+    #     cleaned_text = remove_rt.sub("", cleaned_text)
+
     # Remove non-ASCII characters 
     cleaned_text = cleaned_text.encode(encoding="ascii", errors="ignore").decode()
 
