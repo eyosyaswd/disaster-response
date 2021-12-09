@@ -72,7 +72,7 @@ class TokenAndPositionEmbedding(Layer):
 
 if __name__ == "__main__":
 
-    TASK = "informative"
+    TASK = "humanitarian"
 
     print("\nLoading in testing data...")
 
