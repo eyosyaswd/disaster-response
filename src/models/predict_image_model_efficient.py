@@ -15,6 +15,7 @@ import pickle
 if __name__ == "__main__":
 
     TASK = "humanitarian"
+    MODEL_NAME = "resnet50"
 
     print("\nLoading in testing data...")
 
@@ -28,13 +29,13 @@ if __name__ == "__main__":
 
     # Extract data and labels from dataset
     # test_X = np.load(f"../../data/interim/task_{TASK}_test_preprocessed_image.npy", allow_pickle=True)
-    test_X = Image_Data_Generator(test_df, batch_size=1, scale=600)
+    test_X = Image_Data_Generator(test_df, batch_size=1, scale=224)
     test_y = np.asarray(list(test_df["onehot_label"].apply(literal_eval)))
     
     print("\nLoading in trained model...")
 
     # Load in trained model (can't save model as hdf5)
-    trained_model = load_model(f"../../models-improved/image/{TASK}/{TASK}.hdf5")
+    trained_model = load_model(f"../../models-improved/image/{TASK}/{TASK}_{MODEL_NAME}.hdf5")
     
     # # PC won't let me save model so just recreate the architecture then load in trained weights instead
     # vgg16_model = VGG16(weights="imagenet")
@@ -54,5 +55,5 @@ if __name__ == "__main__":
     print("\nGetting performance metrics...")
 
     # Get performance metrics
-    get_performance_metrics(test_y, pred_y, test_df, TASK, "image_efficient")
+    get_performance_metrics(test_y, pred_y, test_df, TASK, f"image_{MODEL_NAME}")
     
