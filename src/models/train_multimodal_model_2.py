@@ -71,7 +71,7 @@ class TokenAndPositionEmbedding(Layer):
 
 if __name__ == "__main__":
 
-    TASK = "informative"       # "humanitarian" or "informative"
+    TASK = "humanitarian"       # "humanitarian" or "informative"
     SEED = 2021                # Seed to be used for reproducability
 
     print("\nLoading in training and validation datasets...")
@@ -176,7 +176,7 @@ if __name__ == "__main__":
     # sys.exit()
 
     # Initialize Adam optimizer
-    adam = Adam(learning_rate=0.00001)     # NOTE: not specified in paper
+    adam = Adam(learning_rate=0.0001)     # NOTE: not specified in paper
 
     # Config model with losses and metrics
     model.compile(optimizer=adam, loss="categorical_crossentropy", metrics=["accuracy"])
@@ -195,7 +195,7 @@ if __name__ == "__main__":
     checkpoint = ModelCheckpoint(filepath=checkpoint_filepath, monitor="val_accuracy", save_best_only=True, save_weights_only=True, mode="max")
 
     # Train and validate model
-    history = model.fit(x=train_data_gen, epochs=1, validation_data=val_data_gen, callbacks=[lr_reducer, early_stopping, tensorboard, checkpoint])
+    history = model.fit(x=train_data_gen, epochs=50, validation_data=val_data_gen, callbacks=[lr_reducer, early_stopping, tensorboard, checkpoint])
 
     # Load model with best weights
     model.load_weights(checkpoint_filepath)

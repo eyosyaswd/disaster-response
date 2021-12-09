@@ -77,7 +77,7 @@ class Multimodal_Data_Generator(keras.utils.Sequence):
     def __getitem__(self, idx):
 
         # Read in image data
-        batch_image_X = [preprocess_image(img_filepath) for img_filepath in self.data_df.iloc[idx * self.batch_size : (idx+1) * self.batch_size]["image"]]
+        batch_image_X = [preprocess_image(img_filepath, self.scale) for img_filepath in self.data_df.iloc[idx * self.batch_size : (idx+1) * self.batch_size]["image"]]
 
         # Read in text data
         batch_text_X = list(self.data_df.iloc[idx * self.batch_size : (idx+1) * self.batch_size]["padded_sequence"].apply(literal_eval))
