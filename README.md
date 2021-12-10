@@ -1,7 +1,7 @@
 disaster-response
 ==============================
 
-Implementation of the paper 'Analysis of Social Media Data using Multimodal Deep Learning for Disaster Response'
+Implementation and improvement of the paper 'Analysis of Social Media Data using Multimodal Deep Learning for Disaster Response'
 
 ```bib
 @inproceedings{multimodalbaseline2020,
